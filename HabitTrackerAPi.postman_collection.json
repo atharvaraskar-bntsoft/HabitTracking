@@ -1,0 +1,651 @@
+{
+	"info": {
+		"_postman_id": "39d7d54d-c4cb-41fa-8817-4bf50d751a91",
+		"name": "HabitTrackerAPi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35103354"
+	},
+	"item": [
+		{
+			"name": "HabitApis",
+			"item": [
+				{
+					"name": "createHabit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Daily Reading\",\r\n  \"userId\": 1,\r\n  \"description\": \"Read a book for 30 minutes every day\",\r\n  \"goal\": \"25 days\",\r\n  \"frequency\": \"Daily\",\r\n  \"startDate\": \"2024-09-01\",\r\n  \"endDate\": \"2024-09-30\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/habit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"habit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllHabit",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "getHabitById",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "updateHabit",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"name\": \"Exercise\",\r\n    \"userId\": 1,\r\n    \"description\": \"Exercise for 50 minutes every day\",\r\n    \"goal\": \"25 days\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/habit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"habit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteHabit",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserApis",
+			"item": [
+				{
+					"name": "createUser",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllUsers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getUserById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateUsers",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"Virat Kohli\",\r\n  \"password\": \"Virat@18\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteUsers",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/users/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"users",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "MonthApi",
+			"item": [
+				{
+					"name": "createMonth",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"August\",\r\n    \"year\": 2024\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/month",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"month"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllMonths",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "getMonthById",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/month/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"month",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateMonth",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 2,\r\n    \"name\": \"September\",\r\n    \"year\": 2024\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/month",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"month"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteMonth",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/month/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"month",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "HabiTrackingApis",
+			"item": [
+				{
+					"name": "createHabitTracking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"dayOfMonth\": 1,\r\n    \"status\": true,\r\n    \"note\": \"Started the habit\",\r\n    \"count\": 1,\r\n    \"streaks\": 1,\r\n    \"habitId\": 2,\r\n    \"userId\": 1,\r\n    \"monthId\": 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/habittracking",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"habittracking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllHabitTracking",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "updateHabitTracking",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "getHabitTrackingBYId",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SpecialHabitApis",
+			"item": [
+				{
+					"name": "addSpecailHabit",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Drink Water\",\r\n  \"description\": \"Drink 8 glasses\",\r\n  \"goal\": 8,\r\n  \"frequency\": \"DAILY\",\r\n  \"startDate\": \"2024-08-01\",\r\n  \"endDate\": \"2024-08-31\",\r\n  \"userId\": 1\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/specialhabit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"specialhabit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllSpecialHabits",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/specialhabit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"specialhabit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSpecialHabitById",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "updateSpecialHabit",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,  \r\n    \"name\": \"Drink Water\",\r\n    \"description\": \"Drink 8 glasses of water daily\",\r\n    \"goal\": 25,\r\n    \"target\": 8,  \r\n    \"frequency\": \"DAILY\",\r\n    \"startDate\": \"2024-08-01\",\r\n    \"endDate\": \"2024-08-31\",\r\n    \"userId\": 1  \r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/specialhabit",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"specialhabit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteSpecailHabit",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/specialhabit/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"specialhabit",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "SpecialHabitProgress",
+			"item": [
+				{
+					"name": "createSpecialHabitProgress",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"specialHabitId\": 1,\r\n  \"date\": \"2024-09-01\",\r\n  \"progress\": 6,\r\n  \"completed\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/specialhabitprogress",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"specialhabitprogress"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllSpecailHabitProgress",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/specialhabitprogress",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"specialhabitprogress"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteSpecialHabitProgress",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/specialhabitprogress/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"specialhabitprogress",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateSpecialHabitProgress",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1,\r\n  \"specialHabitId\": 1,\r\n  \"userId\": 1,\r\n  \"date\": \"2024-09-08\",\r\n  \"progress\": 8,\r\n  \"completed\": true,\r\n  \"note\": \"Great progress today!\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/specialhabitprogress/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"specialhabitprogress",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSPecialHabitProgressById",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "HabitTracking",
+			"item": [
+				{
+					"name": "createHabitTracking",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"date\": \"2024-09-01\",\r\n    \"status\": true,\r\n    \"note\": \"Completed 30 minutes of reading.\",\r\n    \"habitId\": 1,\r\n    \"userId\": 101\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/habittrackerapi/habittracking",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"habittrackerapi",
+								"habittracking"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getHabitTracking",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
