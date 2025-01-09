@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Goal Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+        }
+
+        input[type="number"], 
+        input[type="month"] {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            border: none;
+            background-color: #28a745;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .result {
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Habit Goal Checker</h1>
+        <form id="goalForm">
+            <label for="habitId">Habit ID:</label>
+            <input type="number" id="habitId" required>
+            
+            <label for="month">Month and Year:</label>
+            <input type="month" id="month" required>
+            
+            <button type="submit">Check Goal</button>
+        </form>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const goalForm = document.getElementById('goalForm');
+            const resultDiv = document.getElementById('result');
+    
+            goalForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+    
+                const habitId = document.getElementById('habitId').value;
+                const month = document.getElementById('month').value;
+    
+                if (!habitId || !month) {
+                    alert('Please provide both Habit ID and Month.');
+                    return;
+                }
+    
+                // Simulated dummy data
+                const dummyData = {
+                    1: {
+                        goal: 20,
+                        count: 18,
+                        month: '2024-08'
+                    },
+                    2: {
+                        goal: 15,
+                        count: 16,
+                        month: '2024-08'
+                    }
+                };
+    
+                // Simulate a delay like a real fetch request
+                await new Promise(resolve => setTimeout(resolve, 500));
+    
+                const selectedMonth = month;
+                if (dummyData[habitId]) {
+                    const { goal, count, month: habitMonth } = dummyData[habitId];
+                    const resultText = (habitMonth === selectedMonth)
+                        ? (count >= goal 
+                            ? `Goal achieved! You completed ${count} out of ${goal} required habit completions for ${habitMonth}.` 
+                            : `Goal not achieved. You completed ${count} out of ${goal} required habit completions for ${habitMonth}.`)
+                        : `Data for habit ID ${habitId} does not match the selected month.`;
+                    resultDiv.textContent = resultText;
+                } else {
+                    resultDiv.textContent = 'Habit ID not found.';
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>

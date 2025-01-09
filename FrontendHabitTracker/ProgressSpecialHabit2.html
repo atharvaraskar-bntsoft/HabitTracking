@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Habit Tracking</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            padding: 20px;
+        }
+
+        h1, h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Form Styles */
+        form {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 30px auto;
+        }
+
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        select {
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        /* Table Styles */
+        .table-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            transition: all 0.3s ease;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            vertical-align: middle;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Updated heading styles */
+        th {
+            font-weight: bold;
+            background-color: #f8f9fa; /* Light grey background */
+            color: black; /* Changed color to black */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .completed {
+            background-color: #d4edda !important;
+        }
+
+        .missed {
+            background-color: #f8d7da !important;
+        }
+
+        tbody td:last-child {
+            color: #666;
+            font-style: italic;
+        }
+
+        /* Table Animation */
+        table tr {
+            transition: all 0.3s ease-in-out;
+        }
+
+        table tr:hover {
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            table {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Special Habit Tracking</h1>
+
+    <!-- Form to select a habit -->
+    <form id="specialHabitForm">
+        <label for="specialHabitDropdown">Select Special Habit:</label>
+        <select id="specialHabitDropdown" class="form-select" required></select>
+        <button type="submit" class="btn btn-primary mt-3">Get Special Habit Progress</button>
+    </form>
+
+    <h2>Special Habit Progress for Habit: <span id="specialHabitName"></span></h2>
+
+    <!-- Table Container with Bootstrap -->
+    <div class="table-container">
+        <table class="table table-hover table-bordered">
+            <thead>
+                <tr id="tableHeaders">
+                    <th>Date</th>
+                    <th>Progress</th>
+                    <th>Status</th>
+                    <th>Note</th>
+                </tr>
+            </thead>
+            <tbody id="specialHabitTableBody">
+                <!-- Data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        const specialHabitDropdown = document.getElementById('specialHabitDropdown');
+        const specialHabitNameSpan = document.getElementById('specialHabitName');
+        const tableBody = document.getElementById('specialHabitTableBody');
+        const tableHeaders = document.getElementById('tableHeaders');
+        let targetUnit = ''; // Variable to store the target unit
+
+        async function populateSpecialHabitDropdown() {
+            try {
+                const response = await fetch('http://localhost:8080/habittrackerapi/specialhabit');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const specialHabits = await response.json();
+
+                specialHabits.forEach(habit => {
+                    const option = document.createElement('option');
+                    option.value = habit.id; // Use habit ID as value
+                    option.textContent = habit.name;
+                    specialHabitDropdown.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching special habits:', error);
+            }
+        }
+
+        async function displaySpecialHabitProgress(habitId) {
+            specialHabitNameSpan.textContent = ''; // Clear habit name span
+            tableBody.innerHTML = ''; // Clear existing rows
+            tableHeaders.innerHTML = ''; // Clear headers first
+
+            try {
+                const response = await fetch(`http://localhost:8080/habittrackerapi/specialhabit/${habitId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch special habit progress');
+                }
+                const habitData = await response.json();
+
+                // Set habit name and append target time if available
+                const habitName = habitData.name;
+                if (habitData.targetTime) {
+                    specialHabitNameSpan.textContent = `${habitName} (Target Time: ${habitData.targetTime})`;
+                } else {
+                    specialHabitNameSpan.textContent = habitName;
+                }
+
+                targetUnit = habitData.targetUnit; // Set target unit
+
+                // Add default headers
+                let timeColumnExists = habitData.progressRecords.some(progress => progress.time);
+
+                const headersHTML = `
+                    <th>Date</th>
+                    <th>Progress</th>
+                    <th>Status</th>
+                    <th>Note</th>
+                    ${timeColumnExists ? '<th>Time</th>' : ''}
+                `;
+                tableHeaders.innerHTML = headersHTML;
+
+                // Iterate over progress records and populate table
+                habitData.progressRecords.forEach(progress => {
+                    const row = document.createElement('tr');
+                    row.className = progress.completed ? 'completed' : 'missed';
+
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = new Date(progress.date).toLocaleDateString(); // Format date
+                    row.appendChild(dateCell);
+
+                    const progressCell = document.createElement('td');
+                    progressCell.textContent = `${progress.progress} ${targetUnit}`; // Append target unit
+                    row.appendChild(progressCell);
+
+                    const statusCell = document.createElement('td');
+                    statusCell.textContent = progress.completed ? 'Completed' : 'Missed';
+                    row.appendChild(statusCell);
+
+                    const noteCell = document.createElement('td');
+                    noteCell.textContent = progress.note;
+                    row.appendChild(noteCell);
+
+                    // Add time cell if time column exists
+                    if (timeColumnExists) {
+                        const timeCell = document.createElement('td');
+                        timeCell.textContent = progress.time || 'N/A';
+                        row.appendChild(timeCell);
+                    }
+
+                    tableBody.appendChild(row);
+                });
+
+            } catch (error) {
+                console.error('Error fetching special habit progress:', error);
+            }
+        }
+
+        document.getElementById('specialHabitForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            const habitId = specialHabitDropdown.value;
+            displaySpecialHabitProgress(habitId);
+        });
+
+        // Populate dropdown on page load
+        populateSpecialHabitDropdown();
+    </script>
+</body>
+</html>

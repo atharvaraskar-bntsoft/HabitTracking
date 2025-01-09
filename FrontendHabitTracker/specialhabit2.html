@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Habit Progress</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .habit-progress {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .habit-progress h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .date-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .date-selector input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            width: 200px;
+        }
+
+        .habit-progress-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .habit-name {
+            flex: 2;
+            font-weight: bold;
+        }
+
+        progress {
+            flex: 4;
+            margin: 0 10px;
+        }
+
+        .progress-count {
+            flex: 1;
+        }
+
+        .habit-progress button {
+            flex: 1;
+            padding: 8px 12px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .habit-progress button.mark {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .habit-progress button.mark:hover {
+            background-color: #0056b3;
+        }
+
+        .habit-progress button.completed {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .habit-progress button.completed:hover {
+            background-color: #218838;
+        }
+
+        .habit-progress button.uncomplete {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .habit-progress button.uncomplete:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="habit-progress">
+        <h2>Habit Progress</h2>
+        
+        <div class="date-selector">
+            <label for="date-picker">Select Date:</label>
+            <input type="date" id="date-picker" onchange="updateDate()">
+        </div>
+
+        <div class="habit-progress-item">
+            <span class="habit-name">Drink Water</span>
+            <progress id="progress-drink-water" value="4" max="8"></progress>
+            <span class="progress-count">4/8</span>
+            <button id="btn-drink-water" class="mark" onclick="updateProgress('progress-drink-water', 8, 'btn-drink-water')">Mark Progress</button>
+            <button id="btn-drink-water-complete" class="completed" onclick="markCompleted('btn-drink-water-complete', 'btn-drink-water-uncomplete')">Completed</button>
+            <button id="btn-drink-water-uncomplete" class="uncomplete" onclick="uncompleteProgress('progress-drink-water', 8, 'btn-drink-water', 'btn-drink-water-complete', 'btn-drink-water-uncomplete')">Uncomplete</button>
+        </div>
+
+        <div class="habit-progress-item">
+            <span class="habit-name">Exercise</span>
+            <progress id="progress-exercise" value="0" max="20"></progress>
+            <span class="progress-count">0/20</span>
+            <button id="btn-exercise" class="mark" onclick="updateProgress('progress-exercise', 20, 'btn-exercise')">Mark Progress</button>
+            <button id="btn-exercise-complete" class="completed" onclick="markCompleted('btn-exercise-complete', 'btn-exercise-uncomplete')">Completed</button>
+            <button id="btn-exercise-uncomplete" class="uncomplete" onclick="uncompleteProgress('progress-exercise', 20, 'btn-exercise', 'btn-exercise-complete', 'btn-exercise-uncomplete')">Uncomplete</button>
+        </div>
+
+        <div class="habit-progress-item">
+            <span class="habit-name">Read</span>
+            <progress id="progress-read" value="0" max="40"></progress>
+            <span class="progress-count">0/40</span>
+            <button id="btn-read" class="mark" onclick="updateProgress('progress-read', 40, 'btn-read')">Mark Progress</button>
+            <button id="btn-read-complete" class="completed" onclick="markCompleted('btn-read-complete', 'btn-read-uncomplete')">Completed</button>
+            <button id="btn-read-uncomplete" class="uncomplete" onclick="uncompleteProgress('progress-read', 40, 'btn-read', 'btn-read-complete', 'btn-read-uncomplete')">Uncomplete</button>
+        </div>
+    </div>
+
+    <script>
+        function updateProgress(progressId, max, buttonId) {
+            var progressBar = document.getElementById(progressId);
+            var currentValue = parseInt(progressBar.value);
+
+            if (currentValue < max) {
+                progressBar.value = currentValue + 1;
+                document.querySelector(`#${progressId} ~ .progress-count`).innerText = `${progressBar.value}/${max}`;
+            }
+        }
+
+        function markCompleted(completeBtnId, uncompleteBtnId) {
+            var completeButton = document.getElementById(completeBtnId);
+            var uncompleteButton = document.getElementById(uncompleteBtnId);
+
+            completeButton.classList.add('completed');
+            completeButton.disabled = true; // Optionally disable the button
+            uncompleteButton.classList.remove('hidden'); // Ensure Uncomplete button is visible
+        }
+
+        function uncompleteProgress(progressId, max, markButtonId, completeBtnId, uncompleteBtnId) {
+            var progressBar = document.getElementById(progressId);
+            var markButton = document.getElementById(markButtonId);
+            var completeButton = document.getElementById(completeBtnId);
+            var uncompleteButton = document.getElementById(uncompleteBtnId);
+
+            // Re-enable the Mark Progress button and Completed button
+            markButton.classList.remove('hidden'); 
+            completeButton.classList.remove('completed');
+            completeButton.disabled = false;
+
+            // Optionally, you can also hide the Uncomplete button if desired
+            uncompleteButton.classList.add('hidden');
+        }
+
+        function updateDate() {
+            var datePicker = document.getElementById('date-picker');
+            var selectedDate = datePicker.value;
+            console.log(`Selected Date: ${selectedDate}`);
+            // Add functionality to fetch and update habit progress based on the selected date
+        }
+    </script>
+</body>
+</html>

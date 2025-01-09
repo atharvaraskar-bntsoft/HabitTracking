@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Habit Progress</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('images/gym.jfif');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            backdrop-filter: blur(5px);
+        }
+
+        .habit-form-container {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .status-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .status-container input[type="radio"] {
+            display: none;
+        }
+
+        .status-label {
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            text-align: center;
+            width: 120px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .status-container input[type="radio"]:checked + .status-label {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .status-container input[type="radio"]#incomplete:checked + .status-label {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .status-container input[type="radio"]:not(:checked) + .status-label:hover {
+            background-color: #e0e0e0;
+        }
+
+        .submit-btn {
+            display: block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="habit-form-container">
+        <div class="header text-center">
+            <h1>Track Your Habit Progress</h1>
+            <p>"The secret of your future is hidden in your daily routine."</p>
+        </div>
+
+        <form id="habitProgressForm">
+            <!-- Date Field -->
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+
+            <!-- Time Field -->
+            <div class="form-group" id="timeField">
+                <label for="time">Time:</label>
+                <input type="time" class="form-control" id="time" name="time">
+            </div>
+
+            <!-- Habit Field -->
+            <div class="form-group">
+                <label for="habitSelect">Habit:</label>
+                <select id="habitSelect" class="form-control" name="specialHabitId" required>
+                    <option value="">Select a habit</option>
+                    <!-- Options will be populated dynamically -->
+                </select>
+            </div>
+
+            <!-- Progress Field -->
+            <div class="form-group">
+                <label for="progress">Progress <span id="targetUnit"></span>:</label>
+                <input type="number" class="form-control" id="progress" name="progress" min="0" max="100" required>
+            </div>
+
+            <!-- Status Field -->
+            <div class="status-container">
+                <input type="radio" id="complete" name="isCompleted" value="true" checked>
+                <label for="complete" class="status-label">Complete</label>
+                
+                <input type="radio" id="incomplete" name="isCompleted" value="false">
+                <label for="incomplete" class="status-label">Incomplete</label>
+            </div>
+
+            <!-- Note Field -->
+            <div class="form-group">
+                <label for="note">Note:</label>
+                <textarea class="form-control" id="note" name="note" placeholder="Enter your note here..." rows="4"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn submit-btn">Submit</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Inline JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('habitProgressForm');
+            const habitDropdown = document.getElementById('habitSelect');
+            const targetUnitSpan = document.getElementById('targetUnit');
+            const timeField = document.getElementById('timeField');
+
+            // Function to populate habit dropdown
+            async function populateHabitDropdown() {
+                try {
+                    const response = await fetch('http://localhost:8080/habittrackerapi/specialhabit');
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const habits = await response.json();
+
+                    habits.forEach(habit => {
+                        const option = document.createElement('option');
+                        option.value = habit.id;
+                        option.textContent = habit.name;
+                        habitDropdown.appendChild(option);
+                    });
+
+                    habitDropdown.addEventListener('change', updateTargetUnit);
+
+                } catch (error) {
+                    console.error('Error fetching habits:', error);
+                }
+            }
+
+            // Function to update target unit and time field visibility
+            async function updateTargetUnit() {
+                const selectedHabitId = habitDropdown.value;
+                if (!selectedHabitId) {
+                    targetUnitSpan.textContent = ''; 
+                    timeField.style.display = 'none'; // Hide time field if no habit selected
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`http://localhost:8080/habittrackerapi/specialhabit/${selectedHabitId}`);
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    const habit = await response.json();
+                    targetUnitSpan.textContent = habit.targetUnit ? `(${habit.targetUnit})` : '';
+
+                    // Show time field only if the habit requires a time input
+                    if (habit.requiresTime) {
+                        timeField.style.display = 'block';
+                    } else {
+                        timeField.style.display = 'none';
+                    }
+
+                } catch (error) {
+                    console.error('Error fetching habit details:', error);
+                }
+            }
+
+            // Populate habits when page loads
+            populateHabitDropdown();
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const date = form.querySelector('input[name="date"]').value;
+                const time = form.querySelector('input[name="time"]').value;
+                const progress = form.querySelector('input[name="progress"]').value;
+                const isCompleted = form.querySelector('input[name="isCompleted"]:checked').value === 'true';
+                const note = form.querySelector('textarea[name="note"]').value;
+                const specialHabitId = form.querySelector('select[name="specialHabitId"]').value;
+                const userId = parseInt(localStorage.getItem("USERID"), 10);
+
+                if (!date || !progress || isNaN(progress) || !specialHabitId || isNaN(userId)) {
+                    alert("Please fill in all required fields correctly.");
+                    return;
+                }
+
+                const data = {
+                    specialHabitId: parseInt(specialHabitId, 10),
+                    userId: userId,
+                    date: date,
+                    time: time || null, // Include time only if it's provided
+                    progress: parseInt(progress, 10),
+                    isCompleted: isCompleted,
+                    note: note
+                };
+
+                try {
+                    const response = await fetch('http://localhost:8080/habittrackerapi/specialhabitprogress', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const result = await response.json();
+                    console.log('Success:', result);
+                    alert('Habit progress submitted successfully!');
+
+                    // Reset the form
+                    form.reset();
+                    targetUnitSpan.textContent = '';
+                    timeField.style.display = 'none'; // Hide time field on reset
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to submit habit progress.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker Completion Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .chart-container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        canvas {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Habit Tracker Completion Chart (Days)</h1>
+    <div class="chart-container">
+        <canvas id="completionChart"></canvas>
+    </div>
+
+    <script>
+        // Function to fetch data from the API
+        async function fetchHabitData() {
+            try {
+                const response = await fetch('http://localhost:8080/habittrackerapi/specialhabit');
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching habit data:", error);
+                return [];
+            }
+        }
+
+        // Function to process the habit data and prepare it for the chart
+        function processCompletionData(habitData) {
+            const habitNames = [];
+            const completedDays = [];
+            const incompleteDays = [];
+
+            habitData.forEach(habit => {
+                habitNames.push(habit.name);
+
+                // Count the number of days completed and incomplete
+                const completed = habit.progressRecords.filter(record => record.completed).length;
+                const incomplete = habit.progressRecords.filter(record => !record.completed).length;
+
+                completedDays.push(completed);
+                incompleteDays.push(incomplete);
+            });
+
+            return { habitNames, completedDays, incompleteDays };
+        }
+
+        // Function to initialize the chart
+        function initializeChart(habitNames, completedDays, incompleteDays) {
+            const ctx = document.getElementById('completionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', // Bar chart
+                data: {
+                    labels: habitNames, // Habit names for x-axis
+                    datasets: [
+                        {
+                            label: 'Completed Days',
+                            data: completedDays,
+                            backgroundColor: '#4caf50', // Green color for completed days
+                            borderColor: '#388e3c',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Incomplete Days',
+                            data: incompleteDays,
+                            backgroundColor: '#f44336', // Red color for incomplete days
+                            borderColor: '#c62828',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Habit Completion Status by Days'
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Habits'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Days'  // Updated y-axis label to "Days"
+                            },
+                            beginAtZero: true // Start the y-axis at 0
+                        }
+                    }
+                }
+            });
+        }
+
+        // Main function to run the app
+        async function runApp() {
+            const habitData = await fetchHabitData(); // Fetch data from API
+            const { habitNames, completedDays, incompleteDays } = processCompletionData(habitData); // Process data for the chart
+            initializeChart(habitNames, completedDays, incompleteDays); // Initialize the chart
+        }
+
+    
+        window.onload = runApp;
+    </script>
+
+</body>
+</html>

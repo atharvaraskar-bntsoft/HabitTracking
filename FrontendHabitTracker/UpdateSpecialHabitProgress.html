@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Update Special Habit Progress</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input[type="number"], input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #progressDisplay {
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Update Special Habit Progress</h1>
+    
+    <label for="habitId">Special Habit ID:</label>
+    <input type="number" id="habitId" aria-label="Special Habit ID" />
+
+    <label for="date">Date:</label>
+    <input type="date" id="date" aria-label="Date" />
+
+    <button onclick="fetchHabitData()">Fetch Data</button>
+
+    <h2>Current Progress</h2>
+    <div id="progressDisplay"></div>
+
+    <h2>Update Progress</h2>
+    <label for="newProgress">New Progress:</label>
+    <input type="number" id="newProgress" aria-label="New Progress" />
+    
+    <label for="completed">Completed:</label>
+    <input type="checkbox" id="completed" aria-label="Completed" />
+
+    <label for="note">Note:</label>
+    <input type="text" id="note" aria-label="Note" />
+
+    <button onclick="updateProgress()">Update Progress</button>
+
+    <script>
+        const apiUrl = 'http://localhost:8080/habittrackerapi/specialhabit/'; // Define the API base URL
+
+        let progressRecord = null; // Store fetched progress record globally
+    
+        function fetchHabitData() {
+            const habitId = document.getElementById('habitId').value;
+            const date = document.getElementById('date').value;
+    
+            if (!habitId || !date) {
+                document.getElementById('progressDisplay').innerText = 'Please enter both Habit ID and Date.';
+                return;
+            }
+    
+            fetch(`${apiUrl}${habitId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    progressRecord = data.progressRecords.find(record => record.date === date); // Store the specific progress record
+    
+                    if (progressRecord) {
+                        document.getElementById('progressDisplay').innerText = `Progress: ${progressRecord.progress}, Completed: ${progressRecord.completed}, Note: ${progressRecord.note}`;
+                        document.getElementById('newProgress').value = progressRecord.progress;
+                        document.getElementById('completed').checked = progressRecord.completed;
+                        document.getElementById('note').value = progressRecord.note;
+                    } else {
+                        document.getElementById('progressDisplay').innerText = 'No progress record found for this date.';
+                        document.getElementById('newProgress').value = '';
+                        document.getElementById('completed').checked = false;
+                        document.getElementById('note').value = '';
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('progressDisplay').innerText = `Error fetching habit data: ${error.message}`;
+                    console.error('Error fetching habit data:', error);
+                });
+        }
+    
+        function updateProgress() {
+            if (!progressRecord) {
+                alert('Please fetch the data first.');
+                return;
+            }
+    
+            const newProgress = document.getElementById('newProgress').value;
+            const completed = document.getElementById('completed').checked;
+            const note = document.getElementById('note').value;
+    
+            if (newProgress === '') {
+                alert('Please fill out all fields.');
+                return;
+            }
+    
+            const updatedRecord = {
+                id: progressRecord.id, // Use the id of the progress record
+                specialHabitId: progressRecord.specialHabitId, // Include specialHabitId
+                userId: progressRecord.userId, // Include userId
+                date: progressRecord.date, // Keep the original date
+                progress: newProgress,
+                completed: completed,
+                note: note
+            };
+    
+            fetch('http://localhost:8080/habittrackerapi/specialhabitprogress/update', { // Ensure the URL is correct
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedRecord)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update progress');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Progress updated successfully');
+                fetchHabitData(); // Refresh data after update
+            })
+            .catch(error => {
+                alert(`Error updating progress: ${error.message}`);
+                console.error('Error updating progress:', error);
+            });
+        }
+    </script>
+</body>
+</html>

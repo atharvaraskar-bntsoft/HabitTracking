@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker Statistics</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 400px;
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Habit Tracker Statistics</h2>
+
+        <!-- Habit Selection Dropdown -->
+        <div class="form-group">
+            <label for="habitSelect">Select Habit:</label>
+            <select class="form-control" id="habitSelect">
+                <!-- Habits will be dynamically populated here -->
+            </select>
+        </div>
+
+        <!-- Bar Chart for Progress vs Target -->
+        <div class="chart-container">
+            <canvas id="progressBarChart"></canvas>
+        </div>
+
+        <!-- Line Chart for Progress Over Time -->
+        <div class="chart-container">
+            <canvas id="progressLineChart"></canvas>
+        </div>
+
+        <!-- Pie Chart for Completed vs Incomplete -->
+        <div class="chart-container">
+            <canvas id="completionPieChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let barChart, lineChart, pieChart;
+
+        // Fetch all habit data dynamically
+        fetch('http://localhost:8080/habittrackerapi/specialhabit')
+            .then(response => response.json())
+            .then(habits => {
+                const habitSelect = document.getElementById('habitSelect');
+                
+                // Populate the dropdown with habits
+                habits.forEach(habit => {
+                    const option = document.createElement('option');
+                    option.value = habit.id;
+                    option.textContent = habit.name;
+                    habitSelect.appendChild(option);
+                });
+
+                // Automatically load charts for the first habit
+                if (habits.length > 0) {
+                    loadChartsForHabit(habits[0].id);
+                }
+
+                // Add event listener to update charts when a new habit is selected
+                habitSelect.addEventListener('change', function() {
+                    loadChartsForHabit(this.value);
+                });
+            })
+            .catch(error => console.error('Error fetching habits:', error));
+
+        // Function to load charts for a selected habit
+        function loadChartsForHabit(habitId) {
+            fetch(`http://localhost:8080/habittrackerapi/specialhabit/${habitId}`)
+                .then(response => response.json())
+                .then(habit => {
+                    // Destroy old charts if they exist
+                    if (barChart) barChart.destroy();
+                    if (lineChart) lineChart.destroy();
+                    if (pieChart) pieChart.destroy();
+
+                    // Generate Bar Chart for Progress vs Target
+                    const barChartData = {
+                        labels: habit.progressRecords.map(record => new Date(record.date).toLocaleDateString()), // Format date
+                        datasets: [{
+                            label: `Progress (${habit.targetUnit})`,
+                            data: habit.progressRecords.map(record => record.progress),
+                            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    };
+
+                    // Generate Line Chart for Progress Over Time
+                    const lineChartData = {
+                        labels: habit.progressRecords.map(record => new Date(record.date).toLocaleDateString()), // Format date
+                        datasets: [{
+                            label: `Progress Over Time (${habit.name})`,
+                            data: habit.progressRecords.map(record => record.progress),
+                            backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                            borderColor: 'rgba(153, 102, 255, 1)',
+                            fill: false,
+                            borderWidth: 2
+                        }]
+                    };
+
+                    // Generate Pie Chart for Completed vs Incomplete
+                    const totalRecords = habit.progressRecords.length;
+                    const completedRecords = habit.progressRecords.filter(record => record.completed).length;
+                    const incompleteRecords = totalRecords - completedRecords;
+
+                    const pieChartData = {
+                        labels: ['Completed', 'Incomplete'],
+                        datasets: [{
+                            label: 'Completion Status',
+                            data: [completedRecords, incompleteRecords],
+                            backgroundColor: ['rgba(75, 192, 192, 0.6)', 'rgba(255, 99, 132, 0.6)'],
+                            borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],
+                            borderWidth: 1
+                        }]
+                    };
+
+                    // Render Bar Chart
+                    const ctxBar = document.getElementById('progressBarChart').getContext('2d');
+                    barChart = new Chart(ctxBar, {
+                        type: 'bar',
+                        data: barChartData,
+                        options: {
+                            scales: {
+                                x: {
+                                    beginAtZero: true
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    title: {
+                                        display: true,
+                                        text: habit.targetUnit
+                                    }
+                                }
+                            },
+                            plugins: {
+                                annotation: {
+                                    annotations: {
+                                        targetLine: {
+                                            type: 'line',
+                                            yMin: habit.target,
+                                            yMax: habit.target,
+                                            borderColor: 'red',
+                                            borderWidth: 2,
+                                            label: {
+                                                content: `Target: ${habit.target}`,
+                                                enabled: true,
+                                                position: 'top'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Render Line Chart
+                    const ctxLine = document.getElementById('progressLineChart').getContext('2d');
+                    lineChart = new Chart(ctxLine, {
+                        type: 'line',
+                        data: lineChartData
+                    });
+
+                    // Render Pie Chart
+                    const ctxPie = document.getElementById('completionPieChart').getContext('2d');
+                    pieChart = new Chart(ctxPie, {
+                        type: 'pie',
+                        data: pieChartData
+                    });
+                })
+                .catch(error => console.error('Error fetching habit:', error));
+        }
+    </script>
+</body>
+</html>

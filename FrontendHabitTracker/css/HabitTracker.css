@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 0;
+    text-align: center;
+}
+
+#quote-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+#habit-form, #habit-list, #calendar-view {
+    margin: 20px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#habit-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+#habit-form input {
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#habit-form button {
+    padding: 10px;
+    border: none;
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#habit-list ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#habit-list li {
+    padding: 10px;
+    background-color: #f9f9f9;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#habit-calendar {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#habit-calendar th, #habit-calendar td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}

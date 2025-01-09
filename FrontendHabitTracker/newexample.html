@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracking Calendar</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .calendar-view {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background-color: #007bff;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        tbody td {
+            border: 1px solid #dddddd;
+            text-align: center;
+            padding: 10px;
+            vertical-align: top;
+            position: relative;
+        }
+
+        .progress-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #28a745; /* Default color for completed */
+        }
+
+        .progress-indicator.incomplete {
+            background-color: #dc3545; /* Color for incomplete */
+        }
+
+        .progress-indicator.not-tracked {
+            background-color: #cccccc; /* Color for not tracked */
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-view">
+        <h2>Habit Tracking Calendar</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="progress-indicator incomplete" title="Not Completed"></span> 1</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 2</td>
+                    <td><span class="progress-indicator not-tracked" title="Not Tracked"></span> 3</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 4</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 5</td>
+                    <td><span class="progress-indicator incomplete" title="Not Completed"></span> 6</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 7</td>
+                </tr>
+                <tr>
+                    <td><span class="progress-indicator" title="Completed"></span> 8</td>
+                    <td><span class="progress-indicator not-tracked" title="Not Tracked"></span> 9</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 10</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 11</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 12</td>
+                    <td><span class="progress-indicator incomplete" title="Not Completed"></span> 13</td>
+                    <td><span class="progress-indicator not-tracked" title="Not Tracked"></span> 14</td>
+                </tr>
+                <tr>
+                    <td><span class="progress-indicator" title="Completed"></span> 15</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 16</td>
+                    <td><span class="progress-indicator not-tracked" title="Not Tracked"></span> 17</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 18</td>
+                    <td><span class="progress-indicator incomplete" title="Not Completed"></span> 19</td>
+                    <td><span class="progress-indicator not-tracked" title="Not Tracked"></span> 20</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 21</td>
+                </tr>
+                <tr>
+                    <td><span class="progress-indicator" title="Completed"></span> 22</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 23</td>
+                    <td><span class="progress-indicator incomplete" title="Not Completed"></span> 24</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 25</td>
+                    <td><span class="progress-indicator not-tracked" title="Not Tracked"></span> 26</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 27</td>
+                    <td><span class="progress-indicator incomplete" title="Not Completed"></span> 28</td>
+                </tr>
+                <tr>
+                    <td><span class="progress-indicator" title="Completed"></span> 29</td>
+                    <td><span class="progress-indicator" title="Completed"></span> 30</td>
+                    <td><span class="progress-indicator not-tracked" title="Not Tracked"></span> 31</td>
+                    <td colspan="4"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

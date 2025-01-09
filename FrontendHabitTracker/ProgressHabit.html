@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracking</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .completed {
+            background-color: #d4edda;
+        }
+        .missed {
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <h1>Habit Tracking</h1>
+    <form id="habitForm">
+        <label for="habitDropdown">Select Habit:</label>
+        <select id="habitDropdown" required></select>
+        <button type="submit">Get Habit Tracking</button>
+    </form>
+    
+    <h2>Habit Tracking for Habit: <span id="habitName"></span></h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody id="habitTableBody">
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        const habitDropdown = document.getElementById('habitDropdown');
+        const habitNameSpan = document.getElementById('habitName');
+
+        async function populateHabitDropdown() {
+            try {
+                const response = await fetch('http://localhost:8080/habittrackerapi/habit');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const habits = await response.json();
+
+                habits.forEach(habit => {
+                    const option = document.createElement('option');
+                    option.value = habit.id; // Use habit ID as value
+                    option.textContent = habit.name;
+                    habitDropdown.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error fetching habits:', error);
+            }
+        }
+
+        async function displayHabitTrackings(habitId) {
+            const tableBody = document.getElementById('habitTableBody');
+            habitNameSpan.textContent = ''; // Clear habit name span
+
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            try {
+                const response = await fetch(`http://localhost:8080/habittrackerapi/habit/${habitId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch habit trackings');
+                }
+                const habit = await response.json();
+
+                habit.habitTrackings.forEach(tracking => {
+                    const row = document.createElement('tr');
+                    row.className = tracking.status ? 'completed' : 'missed';
+
+                    const dateCell = document.createElement('td');
+                    dateCell.textContent = tracking.date;
+                    row.appendChild(dateCell);
+
+                    const statusCell = document.createElement('td');
+                    statusCell.textContent = tracking.status ? 'Completed' : 'Missed';
+                    row.appendChild(statusCell);
+
+                    const noteCell = document.createElement('td');
+                    noteCell.textContent = tracking.note;
+                    row.appendChild(noteCell);
+
+                    tableBody.appendChild(row);
+                });
+
+                // Set habit name in span
+                habitNameSpan.textContent = habit.name;
+
+            } catch (error) {
+                console.error('Error fetching habit trackings:', error);
+            }
+        }
+
+        document.getElementById('habitForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            const habitId = habitDropdown.value;
+            displayHabitTrackings(habitId);
+        });
+
+        // Populate dropdown on page load
+        populateHabitDropdown();
+    </script>
+</body>
+</html>

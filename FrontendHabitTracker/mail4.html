@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Email</title>
+</head>
+<body>
+    <h1>Send Email</h1>
+    <form id="email-form">
+        <input type="email" id="recipient" placeholder="Recipient Email" required />
+        <button type="button" onclick="sendEmail()">Send</button>
+    </form>
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <script>
+        function sendEmail() {
+            // EmailJS SMTP server details
+            Email.send({
+                Host: "smtp.elasticemail.com",
+                Username: "atharvaraskar20@gmail.com",
+                Password: "33DDD30D17E7EDD8C38C63A99242243565C4", // Use your actual SMTP password here
+                To: "atharvaraskar20@gmail.com",
+                From: "atharvaraskar20@gmail.com",
+                Subject: "Welcome Back to Habit Tracker!", // Static subject
+                Body: `
+                    <p>Hello,</p>
+                    <p>Welcome back to the Habit Tracker!</p>
+                    <p style="padding: 12px; border-left: 4px solid #d0d0d0; font-style: italic;">
+                        We're thrilled to see you again today. Let’s make today productive and work towards your goals!
+                    </p>
+                    <p>
+                        Best regards,<br>The Habit Tracker Team
+                    </p>
+                `,
+                Port: 2525
+            }).then(function(message) {
+                alert("Mail sent successfully!");
+            }).catch(function(error) {
+                console.error("Failed to send email:", error);
+                alert("Failed to send email. Please try again.");
+            });
+        }
+    </script>
+</body>
+</html>

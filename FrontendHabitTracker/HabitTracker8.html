@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+            margin: 0;
+        }
+        #habit-tracker {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f0f0f0;
+        }
+        td input[type="checkbox"] {
+            transform: scale(1.3);
+            margin: 5px;
+        }
+        td input[type="text"] {
+            width: 90%;
+            padding: 5px;
+        }
+        td .note {
+            margin-top: 5px;
+        }
+        #add-habit-btn {
+            margin-bottom: 10px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #add-habit-btn:hover {
+            background-color: #0056b3;
+        }
+        .goal-row, .achieved-row {
+            font-weight: bold;
+            background-color: #f0f0f0;
+        }
+        #habit-form-container {
+            margin-top: 20px;
+        }
+        #habit-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        #habit-form input[type="text"] {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #habit-form button {
+            padding: 5px 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #habit-form button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div id="habit-tracker">
+        <h2>Habit Tracker</h2>
+        <button id="add-habit-btn" onclick="window.location.href='addhabit2.html'">Add Habit</button>
+
+        
+        <!-- Habit Form (initially hidden) -->
+        <div id="habit-form-container" style="display: none;">
+            <form id="habit-form">
+                <label for="habit-name">Habit Name:</label>
+                <input type="text" id="habit-name" name="habit-name" required>
+                <button type="submit">Add Habit</button>
+            </form>
+        </div>
+
+        <table>
+            <thead>
+                <tr id="habit-header">
+                    <th>Day</th>
+                    <th>Exercise</th>
+                    <th>Meditation</th>
+                    <th>Additional Information</th>
+                </tr>
+            </thead>
+            <tbody id="habit-body">
+                <!-- Rows will be generated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    const daysInMonth = 31;
+    let habitCount = 2;  // Start with two habits by default
+
+    const habitHeader = document.getElementById('habit-header');
+    const habitBody = document.getElementById('habit-body');
+    const addHabitBtn = document.getElementById('add-habit-btn');
+    const habitFormContainer = document.getElementById('habit-form-container');
+    const habitForm = document.getElementById('habit-form');
+
+    function generateTable() {
+        for (let day = 1; day <= daysInMonth; day++) {
+            const row = document.createElement('tr');
+
+            const dayCell = document.createElement('td');
+            dayCell.textContent = day;
+            row.appendChild(dayCell);
+
+            for (let i = 1; i <= habitCount; i++) {
+                const habitCell = document.createElement('td');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.dataset.day = day;
+                checkbox.dataset.habit = i;
+
+                const noteInput = document.createElement('input');
+                noteInput.type = 'text';
+                noteInput.placeholder = 'Note';
+                noteInput.className = 'note';
+                noteInput.dataset.day = day;
+                noteInput.dataset.habit = i;
+
+                habitCell.appendChild(checkbox);
+                habitCell.appendChild(noteInput);
+                row.appendChild(habitCell);
+            }
+
+            const infoCell = document.createElement('td');
+            const infoInput = document.createElement('input');
+            infoInput.type = 'text';
+            infoInput.placeholder = 'Additional Info';
+            infoCell.appendChild(infoInput);
+            row.appendChild(infoCell);
+
+            habitBody.appendChild(row);
+        }
+
+        addGoalAndAchievedRows();
+    }
+
+    function addHabitColumn(habitName) {
+        habitCount++;
+
+        // Insert new habit header before "Additional Information"
+        const newHabitHeader = document.createElement('th');
+        newHabitHeader.textContent = habitName;
+        habitHeader.insertBefore(newHabitHeader, habitHeader.lastElementChild);
+
+        // Add new habit column for each row before "Additional Information"
+        for (let i = 0; i < habitBody.children.length; i++) {
+            const newHabitCell = document.createElement('td');
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.dataset.day = i + 1;
+            checkbox.dataset.habit = habitCount;
+
+            const noteInput = document.createElement('input');
+            noteInput.type = 'text';
+            noteInput.placeholder = 'Note';
+            noteInput.className = 'note';
+            noteInput.dataset.day = i + 1;
+            noteInput.dataset.habit = habitCount;
+
+            newHabitCell.appendChild(checkbox);
+            newHabitCell.appendChild(noteInput);
+
+            // Insert new habit cell before "Additional Information"
+            habitBody.children[i].insertBefore(newHabitCell, habitBody.children[i].lastElementChild);
+        }
+
+        // Ensure that the goal and achieved rows are updated
+        addGoalAndAchievedRows();
+    }
+
+    function addGoalAndAchievedRows() {
+        const existingGoalRow = document.querySelector('.goal-row');
+        const existingAchievedRow = document.querySelector('.achieved-row');
+        if (existingGoalRow) existingGoalRow.remove();
+        if (existingAchievedRow) existingAchievedRow.remove();
+
+        const goalRow = document.createElement('tr');
+        goalRow.className = 'goal-row';
+
+        const goalCell = document.createElement('td');
+        goalCell.textContent = 'Goal';
+        goalRow.appendChild(goalCell);
+
+        for (let i = 1; i <= habitCount; i++) {
+            const habitGoalCell = document.createElement('td');
+            habitGoalCell.textContent = `20 days`;  
+            goalRow.appendChild(habitGoalCell);
+        }
+
+        const goalInfoCell = document.createElement('td');
+        goalRow.appendChild(goalInfoCell);
+
+        habitBody.appendChild(goalRow);
+
+        const achievedRow = document.createElement('tr');
+        achievedRow.className = 'achieved-row';
+
+        const achievedCell = document.createElement('td');
+        achievedCell.textContent = 'Achieved';
+        achievedRow.appendChild(achievedCell);
+
+        for (let i = 1; i <= habitCount; i++) {
+            const habitAchievedCell = document.createElement('td');
+            habitAchievedCell.textContent = `0`;  
+            achievedRow.appendChild(habitAchievedCell);
+        }
+
+        const achievedInfoCell = document.createElement('td');
+        achievedRow.appendChild(achievedInfoCell);
+
+        habitBody.appendChild(achievedRow);
+    }
+
+    // Event listener to display the form when "Add Habit" button is clicked
+    addHabitBtn.addEventListener('click', function() {
+        habitFormContainer.style.display = 'block';
+    });
+
+    // Event listener to handle form submission
+    habitForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const habitName = document.getElementById('habit-name').value;
+        addHabitColumn(habitName);
+        habitFormContainer.style.display = 'none'; // Hide the form after submission
+        habitForm.reset(); // Reset the form fields
+    });
+
+    generateTable();
+});
+
+    </script>
+</body>
+</html>

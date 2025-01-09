@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Special Habit Progress</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .progress-bar {
+            transition: width 0.6s ease;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="my-4">Update Special Habit Progress</h1>
+        
+        <div class="form-group">
+            <label for="habitName">Select Special Habit:</label>
+            <select id="habitName" class="form-control" aria-label="Special Habit" onchange="fetchHabitData()">
+                <option value="">Select a habit</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="date">Date:</label>
+            <input type="date" id="date" class="form-control" aria-label="Date" />
+        </div>
+
+        <button class="btn btn-primary" onclick="fetchHabitData()">Fetch Data</button>
+
+        <h2 class="my-4">Current Progress</h2>
+        <div id="progressDisplay" class="alert alert-info"></div>
+
+        <h2 class="my-4">Update Progress</h2>
+        <div class="form-group">
+            <label for="newProgress">New Progress:</label>
+            <div class="input-group">
+                <input type="number" id="newProgress" class="form-control" aria-label="New Progress" />
+                <div class="input-group-append">
+                    <span id="targetUnit" class="input-group-text">units</span> <!-- Target unit label -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="completed">Completed:</label>
+            <input type="checkbox" id="completed" aria-label="Completed" />
+        </div>
+
+        <div class="form-group">
+            <label for="note">Note:</label>
+            <input type="text" id="note" class="form-control" aria-label="Note" />
+        </div>
+
+        <button class="btn btn-success" onclick="updateProgress()">Update Progress</button>
+
+        <h2 class="my-4">Progress Overview</h2>
+        <div class="progress">
+            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+    </div>
+
+    <!-- Bootstrap and jQuery JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        const apiUrl = 'http://localhost:8080/habittrackerapi/specialhabit'; // Base API URL
+
+        let progressRecord = null; // Store fetched progress record globally
+        let habitTarget = null; // Store habit's target
+        let targetUnit = 'units'; // Default target unit
+
+        // Fetch all special habits for dropdown
+        function loadSpecialHabits() {
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const habitSelect = document.getElementById('habitName');
+                    data.forEach(habit => {
+                        const option = document.createElement('option');
+                        option.value = habit.id;
+                        option.textContent = habit.name;
+                        habitSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching special habits:', error);
+                });
+        }
+
+        // Fetch data for the selected habit and date
+        function fetchHabitData() {
+            const habitId = document.getElementById('habitName').value;
+            const date = document.getElementById('date').value;
+
+            if (!habitId || !date) {
+                document.getElementById('progressDisplay').innerText = 'Please select a Habit and enter a Date.';
+                return;
+            }
+
+            fetch(`${apiUrl}/${habitId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    habitTarget = data.target; // Store the habit's target value
+                    targetUnit = data.targetUnit; // Store the habit's target unit
+                    progressRecord = data.progressRecords.find(record => record.date === date); // Store the specific progress record
+
+                    // Update the target unit display
+                    document.getElementById('targetUnit').textContent = targetUnit || 'units';
+
+                    if (progressRecord) {
+                        document.getElementById('progressDisplay').innerText = `Progress: ${progressRecord.progress}, Completed: ${progressRecord.completed}, Note: ${progressRecord.note}`;
+                        document.getElementById('newProgress').value = progressRecord.progress;
+                        document.getElementById('completed').checked = progressRecord.completed;
+                        document.getElementById('note').value = progressRecord.note;
+
+                        // Update progress bar based on habit's target
+                        updateProgressBar(progressRecord.progress);
+                    } else {
+                        document.getElementById('progressDisplay').innerText = 'No progress record found for this date.';
+                        document.getElementById('newProgress').value = '';
+                        document.getElementById('completed').checked = false;
+                        document.getElementById('note').value = '';
+                        updateProgressBar(0); // No progress, so 0%
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('progressDisplay').innerText = `Error fetching habit data: ${error.message}`;
+                    console.error('Error fetching habit data:', error);
+                });
+        }
+
+        // Function to update the progress bar based on the current progress and target
+        function updateProgressBar(progress) {
+            const progressBar = document.getElementById('progressBar');
+            const progressPercentage = habitTarget > 0 ? Math.min((progress / habitTarget) * 100, 100) : 0;
+            progressBar.style.width = `${progressPercentage}%`;
+            progressBar.setAttribute('aria-valuenow', progressPercentage);
+            progressBar.textContent = `${Math.round(progressPercentage)}%`;
+        }
+
+        // Update progress record
+        function updateProgress() {
+            if (!progressRecord) {
+                alert('Please fetch the data first.');
+                return;
+            }
+
+            const newProgress = document.getElementById('newProgress').value;
+            const completed = document.getElementById('completed').checked;
+            const note = document.getElementById('note').value;
+
+            if (newProgress === '') {
+                alert('Please fill out all fields.');
+                return;
+            }
+
+            const updatedRecord = {
+                id: progressRecord.id, // Use the id of the progress record
+                specialHabitId: progressRecord.specialHabitId, // Include specialHabitId
+                userId: progressRecord.userId, // Include userId
+                date: progressRecord.date, // Keep the original date
+                progress: newProgress,
+                completed: completed,
+                note: note
+            };
+
+            fetch('http://localhost:8080/habittrackerapi/specialhabitprogress/update', { // Ensure the URL is correct
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedRecord)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update progress');
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Progress updated successfully');
+                fetchHabitData(); // Refresh data after update
+            })
+            .catch(error => {
+                alert(`Error updating progress: ${error.message}`);
+                console.error('Error updating progress:', error);
+            });
+        }
+
+        // Load special habits on page load
+        window.onload = loadSpecialHabits;
+    </script>
+</body>
+</html>

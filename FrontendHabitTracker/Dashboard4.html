@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-image: url('images/Dasboardbg2.jpg'); /* Replace with your image URL */
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        
+        .card-box {
+            border-radius: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+        }
+
+        .card-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-title {
+            margin: 0;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .card-description {
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .row {
+            justify-content: center;
+        }
+
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header class="p-3 text-bg-dark">
+        <div class="container">
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="https://getbootstrap.com/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap">
+                        <use xlink:href="#bootstrap"></use>
+                    </svg>
+                </a>
+    
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    <li><a href="https://getbootstrap.com/docs/5.3/examples/headers/#" class="nav-link px-2 text-secondary">Home</a></li>
+                    <li><a href="AddHabit4.html" class="nav-link px-2 text-white">Add New Habit</a></li>
+                    <li><a href="ListOfHabits.html" class="nav-link px-2 text-white">View Habits</a></li>
+                    <li><a href="MarkHabit2.html" class="nav-link px-2 text-white">Mark Habit</a></li>
+                    <li><a href="Charts4All.html" class="nav-link px-2 text-white">All Charts</a></li>
+                    <li><a href="AddSpecialHabitNew2.html" class="nav-link px-2 text-white">Add Special Habits</a></li>
+                </ul>
+    
+                <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+                    <input type="search" class="form-control form-control-dark text-bg-dark" placeholder="Search..." aria-label="Search">
+                </form>
+    
+                <div class="text-end">
+                    <button type="button" onclick="window.location.href='index.html'" class="btn btn-warning">Log Out</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Add your buttons here below the navigation bar -->
+    <div class="container mt-4">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <a href="ListOfSpecialHabitwithde.html" class="text-decoration-none">
+                    <div class="card-box">
+                        <h5 class="card-title">See All Special Habits</h5>
+                        <p class="card-description">View all special habits you've created.</p>
+                    </div>
+                </a>
+            </div>
+            
+            <div class="col-md-4">
+                <a href="MarkSpecialHabiitProgressAuto2.html" class="text-decoration-none">
+                    <div class="card-box">
+                        <h5 class="card-title">Mark Special Habit</h5>
+                        <p class="card-description">Mark your progress on special habits.</p>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="updateSpecialProgress7.html" class="text-decoration-none">
+                    <div class="card-box">
+                        <h5 class="card-title">Update Special Habit</h5>
+                        <p class="card-description">Update Your Special Habit.</p>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- New boxes start here -->
+            <div class="col-md-4">
+                <a href="ProgressSpecialHabit2.html" class="text-decoration-none">
+                    <div class="card-box">
+                        <h5 class="card-title">View Special Habit Progress</h5>
+                        <p class="card-description">Track your special habit progress </p>
+                    </div>
+                </a>
+            </div>
+            
+
+            <div class="col-md-4">
+                <a href="CalenderProgressSpecialHabit.html" class="text-decoration-none">
+                    <div class="card-box calendar-card">
+                        <h5 class="card-title">Calendar Special Habit</h5>
+                        <p class="card-description">Visualize your special habits on a calendar for better tracking.</p>
+                    </div>
+                </a>
+            </div>
+            
+
+            <div class="col-md-4">
+                <a href="Reports4.html" class="text-decoration-none">
+                    <div class="card-box">
+                        <h5 class="card-title">Reports</h5>
+                        <p class="card-description"> View detailed reports of your special habits.</p>
+                    </div>
+                </a>
+            </div>
+
+           
+            <div class="col-md-4">
+                <a href="Charst6.html" class="text-decoration-none">
+                    <div class="card-box">
+                        <h5 class="card-title">Progress Charts</h5>
+                        <p class="card-description">View insightful charts about your progress.</p>
+                    </div>
+                </a>
+            </div>
+
+         
+
+            <div class="col-md-4">
+                <a href="ToatalSpecialHabitCount.html" class="text-decoration-none">
+                    <div class="card-box">
+                        <h5 class="card-title">Special Habit Progress count</h5>
+                        <p class="card-description">See Count  Of The Progress.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-4">
+                <a href="ProgressHabit.html" class="text-decoration-none">
+                    <div class="card-box">
+                        <h5 class="card-title">Progress of Habit</h5>
+                        <p class="card-description">Analyze your habit data.</</p>
+                    </div>
+                </a>
+            </div>
+
+        
+
+            
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

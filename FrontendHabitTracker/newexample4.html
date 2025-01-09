@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracking</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .completed {
+            background-color: #d4edda;
+        }
+        .missed {
+            background-color: #f8d7da;
+        }
+    </style>
+</head>
+<body>
+    <h1>Habit Tracking for Habit ID: <span id="habitId"></span></h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Note</th>
+            </tr>
+        </thead>
+        <tbody id="habitTableBody">
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        // Sample data
+        const habitTrackings = [
+            { id: 1, habitId: 101, date: "2024-09-01", status: true, note: "Completed 30 minutes of reading." },
+            { id: 2, habitId: 101, date: "2024-09-02", status: true, note: "2 day of sep" },
+            { id: 3, habitId: 102, date: "2024-09-03", status: false, note: "miss beacuse of work" }
+        ];
+
+        // The ID of the habit you want to display
+        const selectedHabitId = 101;
+
+        function displayHabitTrackings(habitId) {
+            const tableBody = document.getElementById('habitTableBody');
+            const habitIdSpan = document.getElementById('habitId');
+            habitIdSpan.textContent = habitId; // Show selected habit ID
+
+            tableBody.innerHTML = ''; // Clear existing rows
+
+            const filteredTrackings = habitTrackings.filter(tracking => tracking.habitId === habitId);
+
+            filteredTrackings.forEach(tracking => {
+                const row = document.createElement('tr');
+                row.className = tracking.status ? 'completed' : 'missed';
+
+                const dateCell = document.createElement('td');
+                dateCell.textContent = tracking.date;
+                row.appendChild(dateCell);
+
+                const statusCell = document.createElement('td');
+                statusCell.textContent = tracking.status ? 'Completed' : 'Missed';
+                row.appendChild(statusCell);
+
+                const noteCell = document.createElement('td');
+                noteCell.textContent = tracking.note;
+                row.appendChild(noteCell);
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initial call to display data for the selected habit ID
+        displayHabitTrackings(selectedHabitId);
+    </script>
+</body>
+</html>

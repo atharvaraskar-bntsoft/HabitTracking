@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Email</title>
+</head>
+<body>
+    <h1>Send Email</h1>
+    <form id="email-form">
+        <input type="email" id="recipient" placeholder="Recipient Email" required />
+        <input type="text" id="subject" placeholder="Subject" required />
+        <textarea id="body" placeholder="Body" required></textarea>
+        <button type="button" onclick="sendEmail()">Send</button>
+    </form>
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <script>
+        function sendEmail() {
+            Email.send({
+                Host: "smtp.elasticemail.com",
+                Username: "atharvaraskar20@gmail.com",
+                Password: "33DDD30D17E7EDD8C38C63A99242243565C4", // Use your actual password here
+                To:  "atharvaraskar20@gmail.com" ,
+                From: "atharvaraskar20@gmail.com",
+                Subject: document.getElementById('subject').value,
+                Body: document.getElementById('body').value,
+                Port: 2525
+            }).then(function(message) {
+                alert("Mail sent successfully!");
+            }).catch(function(error) {
+                console.error("Failed to send email:", error);
+                alert("Failed to send email. Please try again.");
+            });
+        }
+    </script>
+</body>
+</html>

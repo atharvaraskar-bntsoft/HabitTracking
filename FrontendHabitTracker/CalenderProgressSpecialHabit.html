@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker Calendar</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .calendar {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background-color: #ddd;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 2px solid #007bff;
+        }
+
+        .header-item {
+            padding: 10px;
+        }
+
+        .calendar-body {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+        }
+
+        .calendar-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            height: 100px;
+            position: relative;
+            background-color: #fff;
+        }
+
+        .day-number {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .status-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #ddd; /* Default color for days with no data */
+            position: absolute;
+            bottom: 10px;
+            border: 2px solid #fff;
+        }
+
+        .completed {
+            background-color: #28a745; /* Green for completed */
+        }
+
+        .missed {
+            background-color: #dc3545; /* Red for missed */
+        }
+
+        .not-recorded {
+            background-color: #e9ecef; /* Light grey for days without records */
+        }
+
+        .form-control {
+            max-width: 300px;
+        }
+
+        /* Style for the counts and goal section */
+        .counts {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+
+        .count-item {
+            margin: 10px;
+        }
+
+        .completed-count {
+            color: #28a745;
+        }
+
+        .incomplete-count {
+            color: #dc3545;
+        }
+
+        .goal-section {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 1.2em;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="text-center">Habit Tracker Calendar</h1>
+
+    <div class="container">
+        <form id="filterForm" class="mb-4">
+            <div class="form-group">
+                <label for="habitDropdown">Select Habit:</label>
+                <select id="habitDropdown" class="form-control" required></select>
+            </div>
+            <div class="form-group">
+                <label for="monthDropdown">Select Month/Year:</label>
+                <select id="monthDropdown" class="form-control" required></select>
+            </div>
+            <button type="submit" class="btn btn-primary">Show Calendar</button>
+        </form>
+
+        <!-- Goal section for displaying the habit goal -->
+        <div class="goal-section">
+            Goal: <span id="habitGoal">N/A</span>
+        </div>
+
+        <!-- Counts section for completed and incomplete days -->
+        <div class="counts">
+            <span class="count-item completed-count">Completed: <span id="completedCount">0</span></span>
+            <span class="count-item incomplete-count">Incomplete: <span id="incompleteCount">0</span></span>
+        </div>
+
+        <div class="calendar">
+            <div class="calendar-header">
+                <div class="header-item">Sun</div>
+                <div class="header-item">Mon</div>
+                <div class="header-item">Tue</div>
+                <div class="header-item">Wed</div>
+                <div class="header-item">Thu</div>
+                <div class="header-item">Fri</div>
+                <div class="header-item">Sat</div>
+            </div>
+            <div id="calendarBody" class="calendar-body">
+                <!-- Calendar days will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        const habitDropdown = document.getElementById('habitDropdown');
+        const monthDropdown = document.getElementById('monthDropdown');
+        const calendarBody = document.getElementById('calendarBody');
+        const completedCountEl = document.getElementById('completedCount');
+        const incompleteCountEl = document.getElementById('incompleteCount');
+        const habitGoalEl = document.getElementById('habitGoal');
+
+        // Initialize dropdowns
+        async function initDropdowns() {
+            try {
+                // Fetch habits
+                const responseHabits = await fetch('http://localhost:8080/habittrackerapi/specialhabit');
+                if (!responseHabits.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const habits = await responseHabits.json();
+
+                habits.forEach(habit => {
+                    const option = document.createElement('option');
+                    option.value = habit.id;
+                    option.textContent = habit.name;
+                    habitDropdown.appendChild(option);
+                });
+
+                // Populate month dropdown
+                const currentYear = new Date().getFullYear();
+                for (let i = 0; i < 12; i++) {
+                    const monthOption = document.createElement('option');
+                    const date = new Date(currentYear, i);
+                    monthOption.value = `${currentYear}-${String(i + 1).padStart(2, '0')}`;
+                    monthOption.textContent = date.toLocaleString('default', { month: 'long' }) + ' ' + currentYear;
+                    monthDropdown.appendChild(monthOption);
+                }
+
+                // Set default values
+                if (habits.length > 0) {
+                    habitDropdown.value = habits[0].id;
+                }
+                monthDropdown.value = `${currentYear}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+
+                // Display initial calendar
+                showCalendar(habitDropdown.value, monthDropdown.value);
+
+            } catch (error) {
+                console.error('Error initializing dropdowns:', error);
+            }
+        }
+
+        async function showCalendar(habitId, monthYear) {
+            calendarBody.innerHTML = ''; // Clear previous content
+            let completedCount = 0;
+            let incompleteCount = 0;
+
+            try {
+                const response = await fetch(`http://localhost:8080/habittrackerapi/specialhabit/${habitId}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch habit progress');
+                }
+                const habitData = await response.json();
+
+                const { startDate, endDate, goal, progressRecords } = habitData;
+
+                // Display the goal
+                habitGoalEl.textContent = goal || 'No goal set';
+
+                const [year, month] = monthYear.split('-').map(Number);
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const currentYear = year;
+                const currentMonth = month - 1; // JS months are 0-indexed
+
+                // Get the first day of the month and the number of days in the month
+                const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+                const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+                // Create empty days before the start of the month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'calendar-day not-recorded';
+                    calendarBody.appendChild(emptyDay);
+                }
+
+                // Create the days of the month
+                for (let day = 1; day <= lastDate; day++) {
+                    const currentDay = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    const status = progressRecords.find(record => record.date === currentDay);
+
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day';
+
+                    const dayNumber = document.createElement('span');
+                    dayNumber.className = 'day-number';
+                    dayNumber.textContent = day;
+                    dayElement.appendChild(dayNumber);
+
+                    const statusCircle = document.createElement('div');
+                    statusCircle.className = 'status-circle';
+
+                    if (status) {
+                        if (status.completed) {
+                            statusCircle.classList.add('completed');
+                            completedCount++; // Increment completed count
+                        } else {
+                            statusCircle.classList.add('missed');
+                            incompleteCount++; // Increment incomplete count
+                        }
+                    } else {
+                        statusCircle.classList.add('not-recorded');
+                    }
+
+                    dayElement.appendChild(statusCircle);
+                    calendarBody.appendChild(dayElement);
+                }
+
+                // Update counts
+                completedCountEl.textContent = completedCount;
+                incompleteCountEl.textContent = incompleteCount;
+            } catch (error) {
+                console.error('Error displaying calendar:', error);
+            }
+        }
+
+        // Form submission handler
+        document.getElementById('filterForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const habitId = habitDropdown.value;
+            const monthYear = monthDropdown.value;
+            showCalendar(habitId, monthYear);
+        });
+
+        // Initialize on page load
+        initDropdowns();
+    </script>
+</body>
+</html>

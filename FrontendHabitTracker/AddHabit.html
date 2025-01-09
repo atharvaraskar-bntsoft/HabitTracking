@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Habit</title>
+    <link rel="stylesheet" href="css/AddHabit.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Add New Habit</h1>
+        <form id="habitForm">
+            <label for="name">Habit Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter habit name" required>
+
+            <label for="description">Description:</label>
+            <textarea id="description" name="description" placeholder="Enter habit description" required></textarea>
+
+            <label for="goal">Goal:</label>
+            <input type="text" id="goal" name="goal" placeholder="Enter your goal" required>
+
+            <button type="submit">Add Habit</button>
+        </form>
+        <div id="responseMessage"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

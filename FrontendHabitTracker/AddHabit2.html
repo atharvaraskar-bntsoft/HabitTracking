@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Habit</title>
+    <style>
+        /* Global Styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Container */
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 100%;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            border: 2px solid #e2e8f0; /* Add a border */
+            margin: 20px 0; /* Add margin above and below the container */
+        }
+
+        .container h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #5a67d8;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .form-group input, 
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            color: #2d3748;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #5a67d8;
+            outline: none;
+            box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 100px;
+        }
+
+        /* Button */
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: #5a67d8;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #434190;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px 0; /* Reduce margin on smaller screens */
+            }
+
+            .container h1 {
+                font-size: 24px;
+            }
+
+            .form-group input, 
+            .form-group select,
+            .form-group textarea {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Habit</h1>
+
+        <form id="addHabitForm">
+            <div class="form-group">
+                <label for="habitName">Habit Name:</label>
+                <input type="text" id="habitName" name="habitName" required />
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="goal">Goal:</label>
+                <input type="text" id="goal" name="goal" required />
+            </div>
+            <div class="form-group">
+                <label for="frequency">Frequency:</label>
+                <select id="frequency" name="frequency" required>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required />
+            </div>
+            <div class="form-group">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" />
+            </div>
+            <button type="submit">Add Habit</button>
+        </form>
+    </div>
+
+    <script src="js/addhabit2.js"></script>
+</body>
+</html>

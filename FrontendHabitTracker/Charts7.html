@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker Completion Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .header {
+            margin-bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .select-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .select-container select {
+            font-size: 16px;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+        }
+
+        .chart-container {
+            width: 80%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        canvas {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Habit Tracker Completion Chart (Days)</h1>
+        <div class="select-container">
+            <select id="yearSelect">
+                <!-- Option values should be populated dynamically if possible -->
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <!-- Add more years as needed -->
+            </select>
+            <select id="monthSelect">
+                <option value="01">January</option>
+                <option value="02">February</option>
+                <option value="03">March</option>
+                <option value="04">April</option>
+                <option value="05">May</option>
+                <option value="06">June</option>
+                <option value="07">July</option>
+                <option value="08">August</option>
+                <option value="09">September</option>
+                <option value="10">October</option>
+                <option value="11">November</option>
+                <option value="12">December</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="completionChart"></canvas>
+    </div>
+
+    <script>
+        // Function to fetch data from the API based on year and month
+        async function fetchHabitData(year, month) {
+            try {
+                const response = await fetch(`http://localhost:8080/habittrackerapi/specialhabit?year=${year}&month=${month}`);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching habit data:", error);
+                return [];
+            }
+        }
+
+        // Function to process the habit data and prepare it for the chart
+        function processCompletionData(habitData) {
+            const habitNames = [];
+            const completedDays = [];
+            const incompleteDays = [];
+
+            habitData.forEach(habit => {
+                habitNames.push(habit.name);
+
+                // Count the number of days completed and incomplete
+                const completed = habit.progressRecords.filter(record => record.completed).length;
+                const incomplete = habit.progressRecords.filter(record => !record.completed).length;
+
+                completedDays.push(completed);
+                incompleteDays.push(incomplete);
+            });
+
+            return { habitNames, completedDays, incompleteDays };
+        }
+
+        // Function to initialize the chart
+        function initializeChart(habitNames, completedDays, incompleteDays) {
+            const ctx = document.getElementById('completionChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar', // Bar chart
+                data: {
+                    labels: habitNames, // Habit names for x-axis
+                    datasets: [
+                        {
+                            label: 'Completed Days',
+                            data: completedDays,
+                            backgroundColor: '#4caf50', // Green color for completed days
+                            borderColor: '#388e3c',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Incomplete Days',
+                            data: incompleteDays,
+                            backgroundColor: '#f44336', // Red color for incomplete days
+                            borderColor: '#c62828',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Habit Completion Status by Days'
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Habits'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Days'
+                            },
+                            beginAtZero: true // Start the y-axis at 0
+                        }
+                    }
+                }
+            });
+        }
+
+        // Function to handle changes in year or month
+        async function handleFilterChange() {
+            const year = document.getElementById('yearSelect').value;
+            const month = document.getElementById('monthSelect').value;
+            const habitData = await fetchHabitData(year, month);
+            const { habitNames, completedDays, incompleteDays } = processCompletionData(habitData);
+            initializeChart(habitNames, completedDays, incompleteDays);
+        }
+
+        // Run the app when the page loads
+        window.onload = () => {
+            handleFilterChange(); // Initialize chart with default values
+
+            document.getElementById('yearSelect').addEventListener('change', handleFilterChange);
+            document.getElementById('monthSelect').addEventListener('change', handleFilterChange);
+        };
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracking Form</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url('images/gym.jfif');
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            backdrop-filter: blur(5px);
+        }
+
+        .habit-form-container {
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            animation: slideInDown 1.5s ease-in-out;
+        }
+
+        .header p {
+            font-size: 18px;
+            color: #666;
+            font-style: italic;
+            animation: slideInUp 1.5s ease-in-out;
+        }
+
+        .status-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+
+        .status-container input[type="radio"] {
+            display: none;
+        }
+
+        .status-label {
+            background-color: #f0f0f0;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+            text-align: center;
+            width: 120px;
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            color: #555;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-container input[type="radio"]:checked + .status-label {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .status-container input[type="radio"]#incomplete:checked + .status-label {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .status-container input[type="radio"]:not(:checked) + .status-label:hover {
+            background-color: #e0e0e0;
+        }
+
+        .submit-btn {
+            display: block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInDown {
+            0% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInUp {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="habit-form-container">
+        <div class="header text-center">
+            <h1>Mark Your Habit</h1>
+            <p>"The secret of your future is hidden in your daily routine."</p>
+        </div>
+
+        <form class="habit-form">
+            <!-- Date Field -->
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+
+            <!-- Status Field -->
+            <div class="status-container">
+                <input type="radio" id="complete" name="status" value="true" checked>
+                <label for="complete" class="status-label">Complete</label>
+                
+                <input type="radio" id="incomplete" name="status" value="false">
+                <label for="incomplete" class="status-label">Incomplete</label>
+            </div>
+
+            <!-- Note Field -->
+            <div class="form-group">
+                <label for="note">Note:</label>
+                <textarea class="form-control" id="note" name="note" placeholder="Enter your note here..." rows="4"></textarea>
+            </div>
+
+            <!-- Habit ID Field -->
+            <div class="form-group">
+                <label for="habitId">Habit ID:</label>
+                <input type="number" class="form-control" id="habitId" name="habitId" required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn submit-btn">Submit</button>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    
+    <!-- Link to External JS File -->
+    <script src="js/MarkHabit.js"></script>
+</body>
+</html>

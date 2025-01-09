@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker Statistics</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@latest"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            margin: auto;
+            height: 400px;
+            width: 80%;
+        }
+        .filter-options {
+            margin-bottom: 20px;
+        }
+        .filter-section {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center">Habit Tracker Statistics</h2>
+
+        <!-- Habit Selection Dropdown -->
+        <div class="form-group">
+            <label for="habitSelect">Select Habit:</label>
+            <select class="form-control" id="habitSelect">
+                <!-- Habits will be dynamically populated here -->
+            </select>
+        </div>
+
+        <!-- Filter Options (Month/Year OR Start/End Date) -->
+        <div class="form-group filter-options">
+            <label>Filter By:</label><br>
+            <input type="radio" name="filterOption" value="monthYear" id="filterMonthYear" checked> Month and Year<br>
+            <input type="radio" name="filterOption" value="startEndDate" id="filterStartEndDate"> Start Date and End Date
+        </div>
+
+        <!-- Month and Year Selection (Option 1) -->
+        <div id="monthYearSection" class="filter-section">
+            <div class="form-group">
+                <label for="monthSelect">Select Month:</label>
+                <select class="form-control" id="monthSelect">
+                    <option value="">All Months</option>
+                    <option value="0">January</option>
+                    <option value="1">February</option>
+                    <option value="2">March</option>
+                    <option value="3">April</option>
+                    <option value="4">May</option>
+                    <option value="5">June</option>
+                    <option value="6">July</option>
+                    <option value="7">August</option>
+                    <option value="8">September</option>
+                    <option value="9">October</option>
+                    <option value="10">November</option>
+                    <option value="11">December</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="yearSelect">Select Year:</label>
+                <select class="form-control" id="yearSelect">
+                    <option value="">All Years</option>
+                    <!-- Years will be dynamically populated here -->
+                </select>
+            </div>
+        </div>
+
+        <!-- Start Date and End Date Selection (Option 2) -->
+        <div id="startEndDateSection" class="filter-section">
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" class="form-control" id="startDate">
+            </div>
+
+            <div class="form-group">
+                <label for="endDate">End Date:</label>
+                <input type="date" class="form-control" id="endDate">
+            </div>
+        </div>
+
+        <!-- Bar Chart for Progress vs Target -->
+        <div class="chart-container">
+            <canvas id="progressBarChart"></canvas>
+        </div>
+
+        <!-- Line Chart for Progress Over Time -->
+        <div class="chart-container">
+            <canvas id="progressLineChart"></canvas>
+        </div>
+
+        <!-- Pie Chart for Completed vs Incomplete -->
+        <div class="chart-container">
+            <canvas id="completionPieChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let barChart, lineChart, pieChart;
+
+        // Initializing the page with options hidden
+        document.getElementById('monthYearSection').style.display = 'block';
+        document.getElementById('startEndDateSection').style.display = 'none';
+
+        // Show/Hide Filter Sections based on selection
+        document.getElementById('filterMonthYear').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('monthYearSection').style.display = 'block';
+                document.getElementById('startEndDateSection').style.display = 'none';
+            }
+        });
+
+        document.getElementById('filterStartEndDate').addEventListener('change', function() {
+            if (this.checked) {
+                document.getElementById('monthYearSection').style.display = 'none';
+                document.getElementById('startEndDateSection').style.display = 'block';
+            }
+        });
+
+        // Fetch all habit data dynamically
+        fetch('http://localhost:8080/habittrackerapi/specialhabit')
+            .then(response => response.json())
+            .then(habits => {
+                const habitSelect = document.getElementById('habitSelect');
+                
+                // Populate the dropdown with habits
+                habits.forEach(habit => {
+                    const option = document.createElement('option');
+                    option.value = habit.id;
+                    option.textContent = habit.name;
+                    habitSelect.appendChild(option);
+                });
+
+                // Automatically load charts for the first habit
+                if (habits.length > 0) {
+                    loadChartsForHabit(habits[0].id);
+                }
+
+                // Add event listener to update charts when a new habit is selected
+                habitSelect.addEventListener('change', function() {
+                    loadChartsForHabit(this.value);
+                });
+
+                // Populate years dynamically
+                populateYears();
+
+                // Add event listeners for filters
+                document.getElementById('monthSelect').addEventListener('change', applyFilters);
+                document.getElementById('yearSelect').addEventListener('change', applyFilters);
+                document.getElementById('startDate').addEventListener('change', applyFilters);
+                document.getElementById('endDate').addEventListener('change', applyFilters);
+            })
+            .catch(error => console.error('Error fetching habits:', error));
+
+        // Populate year options
+        function populateYears() {
+            const yearSelect = document.getElementById('yearSelect');
+            const currentYear = new Date().getFullYear();
+            for (let year = currentYear; year >= 2000; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // Function to apply the selected filters (Month/Year or Start/End Date)
+        function applyFilters() {
+            const habitId = document.getElementById('habitSelect').value;
+            loadChartsForHabit(habitId);
+        }
+
+        // Function to load charts for a selected habit and apply filters
+        function loadChartsForHabit(habitId) {
+            const filterOption = document.querySelector('input[name="filterOption"]:checked').value;
+            let month, year, startDate, endDate;
+
+            if (filterOption === 'monthYear') {
+                month = document.getElementById('monthSelect').value;
+                year = document.getElementById('yearSelect').value;
+            } else if (filterOption === 'startEndDate') {
+                startDate = document.getElementById('startDate').value;
+                endDate = document.getElementById('endDate').value;
+            }
+
+            fetch(`http://localhost:8080/habittrackerapi/specialhabit/${habitId}`)
+                .then(response => response.json())
+                .then(habit => {
+                    // Filter progress records based on the selected option
+                    let filteredRecords = habit.progressRecords;
+
+                    if (filterOption === 'monthYear') {
+                        if (month) {
+                            filteredRecords = filteredRecords.filter(record => new Date(record.date).getMonth() == month);
+                        }
+                        if (year) {
+                            filteredRecords = filteredRecords.filter(record => new Date(record.date).getFullYear() == year);
+                        }
+                    } else if (filterOption === 'startEndDate') {
+                        if (startDate) {
+                            filteredRecords = filteredRecords.filter(record => new Date(record.date) >= new Date(startDate));
+                        }
+                        if (endDate) {
+                            filteredRecords = filteredRecords.filter(record => new Date(record.date) <= new Date(endDate));
+                        }
+                    }
+
+                    // Destroy old charts if they exist
+                    if (barChart) barChart.destroy();
+                    if (lineChart) lineChart.destroy();
+                    if (pieChart) pieChart.destroy();
+
+                    // Generate Bar Chart for Progress vs Target
+                    const barChartData = {
+                        labels: filteredRecords.map(record => new Date(record.date).toLocaleDateString()), // Format date
+                        datasets: [{
+                            label: 'Progress',
+                            data: filteredRecords.map(record => record.progress),
+                            backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                        }]
+                    };
+                    const ctxBar = document.getElementById('progressBarChart').getContext('2d');
+                    barChart = new Chart(ctxBar, {
+                        type: 'bar',
+                        data: barChartData,
+                        options: {
+                            scales: {
+                                x: {
+                                    beginAtZero: true
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + ' ' + habit.targetUnit; // Add target unit
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: {
+                                annotation: {
+                                    annotations: {
+                                        targetLine: {
+                                            type: 'line',
+                                            yMin: habit.target,
+                                            yMax: habit.target,
+                                            borderColor: 'red',
+                                            borderWidth: 2,
+                                            label: {
+                                                content: 'Target',
+                                                enabled: true,
+                                                position: 'top'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    // Generate Line Chart for Progress Over Time
+                    const lineChartData = {
+                        labels: filteredRecords.map(record => new Date(record.date).toLocaleDateString()), // Format date
+                        datasets: [{
+                            label: 'Progress Over Time',
+                            data: filteredRecords.map(record => record.progress),
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            fill: false
+                        }]
+                    };
+                    const ctxLine = document.getElementById('progressLineChart').getContext('2d');
+                    lineChart = new Chart(ctxLine, {
+                        type: 'line',
+                        data: lineChartData,
+                        options: {
+                            scales: {
+                                x: {
+                                    beginAtZero: true
+                                },
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+
+                    // Generate Pie Chart for Completed vs Incomplete
+                    const pieChartData = {
+                        labels: ['Completed', 'Incomplete'],
+                        datasets: [{
+                            data: [
+                                filteredRecords.filter(record => record.completed).length,
+                                filteredRecords.filter(record => !record.completed).length
+                            ],
+                            backgroundColor: ['#4CAF50', '#FF0000']
+                        }]
+                    };
+                    const ctxPie = document.getElementById('completionPieChart').getContext('2d');
+                    pieChart = new Chart(ctxPie, {
+                        type: 'pie',
+                        data: pieChartData
+                    });
+                })
+                .catch(error => console.error('Error loading habit data:', error));
+        }
+    </script>
+</body>
+</html>

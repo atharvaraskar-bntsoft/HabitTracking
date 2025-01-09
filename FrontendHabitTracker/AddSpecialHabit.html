@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Habit</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 100%;
+            animation: fadeIn 1s ease-in-out;
+            margin: 20px;
+        }
+
+        .container h1 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-control, .form-select, .form-check-input {
+            border-radius: 0.75rem;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #0056b3;
+            box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-check-input {
+            margin-top: 0.2rem;
+        }
+
+        .btn-primary {
+            background-color: #0056b3;
+            border-color: #0056b3;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 0.75rem;
+            transition: background-color 0.3s, border-color 0.3s;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background-color: #004085;
+            border-color: #00306d;
+        }
+
+        .form-check {
+            margin-bottom: 0.75rem;
+        }
+
+        .form-check-label {
+            margin-left: 0.75rem;
+        }
+
+        .alert {
+            border-radius: 0.75rem;
+        }
+
+        .card {
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            font-size: 1.5rem;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+
+        .card-footer {
+            background-color: #f8f9fa;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .form-control {
+            margin-bottom: 1rem;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            border-radius: 0.75rem;
+            transition: background-color 0.3s, border-color 0.3s;
+            width: 100%;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        .form-control, .form-select {
+            padding: 12px;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 767px) {
+            .container {
+                padding: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 1rem;
+            }
+
+            .btn-primary, .btn-secondary {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Habit</h1>
+
+        <form id="addHabitForm">
+            <div class="card">
+                <div class="card-header">Habit Details</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="habitName" class="form-label">Habit Name:</label>
+                        <input type="text" id="habitName" name="habitName" class="form-control" placeholder="Enter habit name" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="description" class="form-label">Description:</label>
+                        <textarea id="description" name="description" class="form-control" placeholder="Describe your habit" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="goal" class="form-label">Goal:</label>
+                        <input type="number" id="goal" name="goal" class="form-control" placeholder="Enter your goal" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="target" class="form-label">Target:</label>
+                        <input type="number" id="target" name="target" class="form-control" placeholder="Enter your target" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="frequency" class="form-label">Frequency:</label>
+                        <select id="frequency" name="frequency" class="form-select" required>
+                            <option value="DAILY">Daily</option>
+                            <option value="WEEKLY">Weekly</option>
+                            <option value="MONTHLY">Monthly</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="dayOfWeekSection" style="display: none;">
+                        <label class="form-label">Select Days of the Week:</label>
+                        <div class="form-check">
+                            <input type="checkbox" id="monday" name="days" value="MONDAY" class="form-check-input">
+                            <label for="monday" class="form-check-label">Monday</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="tuesday" name="days" value="TUESDAY" class="form-check-input">
+                            <label for="tuesday" class="form-check-label">Tuesday</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="wednesday" name="days" value="WEDNESDAY" class="form-check-input">
+                            <label for="wednesday" class="form-check-label">Wednesday</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="thursday" name="days" value="THURSDAY" class="form-check-input">
+                            <label for="thursday" class="form-check-label">Thursday</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="friday" name="days" value="FRIDAY" class="form-check-input">
+                            <label for="friday" class="form-check-label">Friday</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="saturday" name="days" value="SATURDAY" class="form-check-input">
+                            <label for="saturday" class="form-check-label">Saturday</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="sunday" name="days" value="SUNDAY" class="form-check-input">
+                            <label for="sunday" class="form-check-label">Sunday</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-header">Date Information</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="startDate" class="form-label">Start Date:</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate" class="form-label">End Date:</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control" required />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <button type="submit" class="btn btn-primary">Add Habit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const frequencySelect = document.getElementById('frequency');
+            const dayOfWeekSection = document.getElementById('dayOfWeekSection');
+
+            frequencySelect.addEventListener('change', () => {
+                if (frequencySelect.value === 'WEEKLY') {
+                    dayOfWeekSection.style.display = 'block';
+                } else {
+                    dayOfWeekSection.style.display = 'none';
+                }
+            });
+
+            const form = document.getElementById('addHabitForm');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const habitName = document.getElementById('habitName').value;
+                const description = document.getElementById('description').value;
+                const goal = document.getElementById('goal').value;
+                const target = document.getElementById('target').value;
+                const frequency = document.getElementById('frequency').value;
+                const startDate = document.getElementById('startDate').value;
+                const endDate = document.getElementById('endDate').value;
+                const userId = localStorage.getItem("userId"); // Get user ID from local storage
+                const days = Array.from(form.querySelectorAll('input[name="days"]:checked')).map(el => el.value);
+
+                // Construct the data object to send
+                const data = {
+                    habitName,
+                    description,
+                    goal,
+                    target,
+                    frequency,
+                    startDate,
+                    endDate,
+                    userId,
+                    days
+                };
+
+                try {
+                    const response = await fetch('/api/habits', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const result = await response.json();
+                    console.log(result);
+                    alert('Habit added successfully!');
+                    form.reset(); // Reset the form
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to add habit.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

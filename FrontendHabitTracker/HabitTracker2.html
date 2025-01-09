@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 20px;
+            margin: 0;
+        }
+
+        #habit-tracker {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: fixed; /* Set fixed layout to handle column widths better */
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f0f0f0;
+        }
+
+        td input[type="checkbox"] {
+            transform: scale(1.3);
+            margin: 5px;
+        }
+
+        td input[type="text"] {
+            width: 90%;
+            padding: 5px;
+            box-sizing: border-box;
+        }
+
+        #add-habit-btn {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #add-habit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .additional-info {
+            background-color: #e0f7fa;
+        }
+
+        .additional-info td {
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .habit-col {
+            width: 150px; /* Adjust width for habit columns */
+        }
+
+        .day-col {
+            width: 80px; /* Adjust width for day columns */
+        }
+
+        .goal-streak-col {
+            width: 120px; /* Adjust width for Goal and Streaks columns */
+        }
+    </style>
+</head>
+<body>
+    <div id="habit-tracker">
+        <h2>Habit Tracker</h2>
+        <button id="add-habit-btn">Add Habit</button>
+        <table>
+            <thead>
+                <tr id="habit-header">
+                    <th class="habit-col">Habits</th>
+                    <!-- Days will be dynamically added here -->
+                    <th class="day-col">1</th>
+                    <th class="day-col">2</th>
+                    <!-- Add more days as needed -->
+                    <th class="day-col">31</th>
+                    <th class="goal-streak-col">Goal</th>
+                    <th class="goal-streak-col">Streaks</th>
+                </tr>
+            </thead>
+            <tbody id="habit-body">
+                <!-- Habit rows will be dynamically generated here -->
+            </tbody>
+            <tfoot>
+                <tr class="additional-info">
+                    <td>Additional Information</td>
+                    <!-- Day columns will be dynamically added here -->
+                    <td colspan="31">
+                        <input type="text" placeholder="Enter additional info for each day" style="width: 100%;">
+                    </td>
+                    <td><input type="text" placeholder="Goal"></td>
+                    <td><input type="text" placeholder="Streaks"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const daysInMonth = 31;
+            let habitCount = 0;  // Start with zero habits
+
+            const habitHeader = document.getElementById('habit-header');
+            const habitBody = document.getElementById('habit-body');
+            const addHabitBtn = document.getElementById('add-habit-btn');
+
+            function generateTable() {
+                // Generate header for days and additional columns
+                habitHeader.innerHTML = `<th class="habit-col">Habits</th>`;
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayHeader = document.createElement('th');
+                    dayHeader.className = 'day-col';
+                    dayHeader.textContent = day;
+                    habitHeader.appendChild(dayHeader);
+                }
+                habitHeader.innerHTML += `<th class="goal-streak-col">Goal</th><th class="goal-streak-col">Streaks</th>`;
+
+                // Generate the additional information row
+                const infoRow = document.createElement('tr');
+                infoRow.className = 'additional-info';
+                infoRow.innerHTML = `<td>Additional Information</td>`;
+                for (let day = 1; day <= daysInMonth; day++) {
+                    infoRow.innerHTML += `<td><input type="text" placeholder="Info"></td>`;
+                }
+                infoRow.innerHTML += `<td><input type="text" placeholder="Goal"></td><td><input type="text" placeholder="Streaks"></td>`;
+                habitBody.appendChild(infoRow);
+            }
+
+            function addHabitRow() {
+                habitCount++;
+                const row = document.createElement('tr');
+
+                // Habit Name Column
+                const habitNameCell = document.createElement('td');
+                habitNameCell.textContent = `Habit ${habitCount}`;
+                habitNameCell.className = 'habit-col';
+                row.appendChild(habitNameCell);
+
+                // Habit Checkboxes and Notes Columns
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const habitCell = document.createElement('td');
+                    habitCell.className = 'day-col';
+                    
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.dataset.day = day;
+                    checkbox.dataset.habit = habitCount;
+
+                    const noteInput = document.createElement('input');
+                    noteInput.type = 'text';
+                    noteInput.placeholder = 'Note';
+                    noteInput.dataset.day = day;
+                    noteInput.dataset.habit = habitCount;
+
+                    habitCell.appendChild(checkbox);
+                    habitCell.appendChild(noteInput);
+                    row.appendChild(habitCell);
+                }
+
+                // Goal and Streaks Columns
+                row.innerHTML += `<td>26</td><td>0</td>`;
+                habitBody.insertBefore(row, habitBody.querySelector('.additional-info'));
+            }
+
+            addHabitBtn.addEventListener('click', addHabitRow);
+
+            generateTable();
+        });
+    </script>
+</body>
+</html>
+

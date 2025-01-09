@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Your Special Habit</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom Styles */
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: #5a67d8;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #434190;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+        }
+
+        h1 {
+            margin-top: 190px; /* Add top margin */
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-check-label {
+            font-weight: normal;
+            color: #666;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Add Your Special Habit</h1>
+        <form id="addHabitForm">
+            <div class="form-group">
+                <label for="habitName">Habit Name:</label>
+                <input type="text" id="habitName" name="habitName" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea id="description" name="description" class="form-control" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="goal">Goal:</label>
+                <input type="number" id="goal" name="goal" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+                <label for="goalUnit">Goal Unit:</label>
+                <select id="goalUnit" name="goalUnit" class="form-control" required>
+                    <option value="days">Days</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="target">Target:</label>
+                <input type="number" id="target" name="target"  placeholder="Target (1 for one go, or number of parts)" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+                <label for="targetUnit">Target Unit:</label>
+                <input type="text" id="targetUnit" name="targetUnit" placeholder="e.g., glasses, minutes, steps" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+                <label for="frequency">Frequency:</label>
+                <select id="frequency" name="frequency" class="form-control" required>
+                    <option value="DAILY">Daily</option>
+                    <option value="WEEKLY">Weekly</option>
+                    <option value="MONTHLY">Monthly</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" class="form-control" required />
+            </div>
+
+            <div class="form-group">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" class="form-control" />
+            </div>
+
+            <div class="form-group form-check">
+                <input type="checkbox" id="isTimeRelated" name="isTimeRelated" class="form-check-input">
+                <label for="isTimeRelated" class="form-check-label">Time</label>
+            </div>
+
+            <div class="form-group" id="timeField" style="display:none;">
+                <label for="targetTime">Select Time (HH:MM):</label>
+                <input type="time" id="targetTime" name="targetTime" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Habit</button>
+        </form>
+    </div>
+
+    <script src="js/AddSpecialHabit.js"></script>
+</body>
+</html>

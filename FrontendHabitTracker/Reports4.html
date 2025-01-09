@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habit Tracker Report</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card-header {
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 5px 5px 0 0;
+        }
+        .card {
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+        }
+        table {
+            margin-top: 15px;
+        }
+        table th, table td {
+            text-align: center;
+        }
+        .report-item {
+            margin-top: 15px;
+        }
+        .pdf-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-5">
+        <h1 class="text-center mb-4">Habit Tracker Report</h1>
+
+        <!-- Month and Year Selector -->
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="monthSelector">Select Month:</label>
+                <select id="monthSelector" class="form-control" onchange="filterByMonthAndYear()">
+                    <option value="01">January</option>
+                    <option value="02">February</option>
+                    <option value="03">March</option>
+                    <option value="04">April</option>
+                    <option value="05">May</option>
+                    <option value="06">June</option>
+                    <option value="07">July</option>
+                    <option value="08">August</option>
+                    <option value="09">September</option>
+                    <option value="10">October</option>
+                    <option value="11">November</option>
+                    <option value="12">December</option>
+                </select>
+            </div>
+
+            <div class="form-group col-md-6">
+                <label for="yearSelector">Select Year:</label>
+                <select id="yearSelector" class="form-control" onchange="filterByMonthAndYear()">
+                    <option value="2023">2023</option>
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Habit Report Sections -->
+        <div id="habit-reports"></div>
+
+        <!-- Button to download PDF -->
+        <div class="text-center pdf-button">
+            <button class="btn btn-success" onclick="downloadPDF()">Download Report as PDF</button>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Latest jsPDF and html2canvas libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        let allHabitsData = []; // Store all fetched habits here
+
+        // Fetch data from the API
+        fetch('http://localhost:8080/habittrackerapi/specialhabit')
+            .then(response => response.json())
+            .then(data => {
+                allHabitsData = data;
+                filterByMonthAndYear(); // Filter and display data for the default selected month and year
+            })
+            .catch(error => console.error('Error fetching data:', error));
+
+        // Function to filter habits based on selected month and year
+        function filterByMonthAndYear() {
+            const selectedMonth = document.getElementById('monthSelector').value;
+            const selectedYear = document.getElementById('yearSelector').value;
+            const habitReports = document.getElementById('habit-reports');
+            habitReports.innerHTML = ''; // Clear existing reports
+
+            // Filter data for the selected month and year
+            allHabitsData.forEach(habit => {
+                const filteredProgressRecords = habit.progressRecords.filter(record => {
+                    const recordDateParts = record.date.split('-'); // Extract year and month from date (YYYY-MM-DD)
+                    const recordYear = recordDateParts[0];
+                    const recordMonth = recordDateParts[1];
+                    return recordYear === selectedYear && recordMonth === selectedMonth;
+                });
+
+                // Calculate progress summary
+                const completionRate = calculateCompletionRate(filteredProgressRecords);
+                const averageProgress = calculateAverageProgress(filteredProgressRecords);
+                const bestDay = findBestDay(filteredProgressRecords);
+                const worstDay = findWorstDay(filteredProgressRecords);
+                const completedCount = filteredProgressRecords.filter(record => record.completed).length;
+                const uncompletedCount = filteredProgressRecords.length - completedCount;
+                const goalAchieved = completedCount >= habit.goal ? 'Yes' : 'No';
+
+                // If there are progress records for the selected month and year, display the habit card
+                if (filteredProgressRecords.length > 0) {
+                    const habitCard = document.createElement('div');
+                    habitCard.classList.add('card', 'mb-4');
+                    habitCard.innerHTML = `
+                        <div class="card-header">
+                            <h3>${habit.name}</h3>
+                            <p>${habit.description}</p>
+                            <p><strong>Target:</strong> ${habit.target} ${habit.targetUnit} per day</p>
+                            <p><strong>Goal:</strong> ${habit.goal} ${habit.goalUnit}</p>
+                            <p><strong>Start Date:</strong> ${habit.startDate} <strong>End Date:</strong> ${habit.endDate}</p>
+                        </div>
+                        <div class="card-body">
+                            <h5>Progress Summary for ${getMonthName(selectedMonth)} ${selectedYear}</h5>
+                            <div class="report-item">
+                                <strong>Completion Rate:</strong> ${completionRate}% 
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: ${completionRate}%;" aria-valuenow="${completionRate}" aria-valuemin="0" aria-valuemax="100">${completionRate}%</div>
+                                </div>
+                            </div>
+                            <div class="report-item"><strong>Completed Count:</strong> ${completedCount} days</div>
+                            <div class="report-item"><strong>Uncompleted Count:</strong> ${uncompletedCount} days</div>
+                            <div class="report-item"><strong>Average Progress:</strong> ${averageProgress.toFixed(2)} ${habit.targetUnit}</div>
+                            <div class="report-item"><strong>Best Day:</strong> ${bestDay.date} (${bestDay.progress} ${habit.targetUnit})</div>
+                            <div class="report-item"><strong>Worst Day:</strong> ${worstDay.date} (${worstDay.progress} ${habit.targetUnit})</div>
+                            <div class="report-item"><strong>Goal Achieved:</strong> ${goalAchieved}</div>
+                            
+                            <h5 class="mt-4">Progress Records</h5>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Progress</th>
+                                        <th>Note</th>
+                                        <th>Completed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${filteredProgressRecords.map(record => `
+                                        <tr>
+                                            <td>${record.date}</td>
+                                            <td>${record.progress} ${habit.targetUnit}</td>
+                                            <td>${record.note ? record.note : 'No Notes'}</td>
+                                            <td>${record.completed ? 'Yes' : 'No'}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                    habitReports.appendChild(habitCard);
+                }
+            });
+        }
+
+        // Helper functions
+        function calculateCompletionRate(records) {
+            const totalRecords = records.length;
+            const completedRecords = records.filter(record => record.completed).length;
+            return ((completedRecords / totalRecords) * 100).toFixed(2);
+        }
+
+        function calculateAverageProgress(records) {
+            const totalProgress = records.reduce((total, record) => total + record.progress, 0);
+            return totalProgress / records.length;
+        }
+
+        function findBestDay(records) {
+    if (records.length === 0) {
+        return { date: 'N/A', progress: 0 };  // Return a default value if no records exist
+    }
+    return records.reduce((best, current) => current.progress > best.progress ? current : best);
+}
+
+function findWorstDay(records) {
+    if (records.length === 0) {
+        return { date: 'N/A', progress: 0 };  // Return a default value if no records exist
+    }
+    return records.reduce((worst, current) => current.progress < worst.progress ? current : worst);
+}
+
+        function getMonthName(month) {
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June', 'July',
+                'August', 'September', 'October', 'November', 'December'
+            ];
+            return monthNames[parseInt(month) - 1];
+        }
+
+        // Function to download report as PDF
+        function downloadPDF() {
+            const habitReportsDiv = document.getElementById('habit-reports');
+            html2canvas(habitReportsDiv).then(function(canvas) {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jspdf.jsPDF();
+                pdf.addImage(imgData, 'PNG', 10, 10, 180, 250);
+                pdf.save('habit_tracker_report.pdf');
+            });
+        }
+    </script>
+</body>
+</html>
